@@ -141,11 +141,13 @@
                     {name: "Provosts' Council 1", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Monthly'},
                     {name: "Academic Unit 2", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Preparation of THECB documentation'},
                     {name: "Academic Programs 2", submission_date: 'n/a', duration: 14, date_of_completion: 'n/a', notes: 'THECB Documentation Review'},
-                    {name: "UC/GPSC", submission_date: 'n/a', duration: 60, date_of_completion: 'n/a', notes: 'Monthly - Summer Hiatus June - Aug'},
+                    {name: "UC/GPSC", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Monthly - Summer Hiatus June - Aug'},
                     {name: "Provosts' Council 2", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Monthly'},
                     {name: "Board of Regents", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Quarterly'},
                     {name: "Area Notification", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Notification of all institutions (50 miles)'},
                     {name: "THECB", submission_date: 'n/a', duration: 60, date_of_completion: 'n/a', notes: 'THECB Staff Review'},
+                    {name: "THECB CAWS", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Quarterly'},
+                    {name: "THECB Board Meeting", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Quarterly'},
                     {name: "US Department of Education", submission_date: 'n/a' , duration: 45, date_of_completion: 'n/a', notes: 'Financial Aid Eligibility'},
                     {name: "Academic Unit and UH Stakeholders", submission_date: 'n/a', duration: 14, date_of_completion: 'n/a', notes: 'PeopleSoft implementation, Catalog implementation, Application software updated, program available to applicants)'},	
                 ],
@@ -155,7 +157,7 @@
               chartOptions: {
                     animationEnabled: true,
                     title: {
-                    text: "New Bachelor's and Master's Programs with costs under $2M in first five years",
+                    text: "New Bachelor's and Master's Programs with costs over $2M in first five years and Engineering",
                 },
                 data: [{
                     type: "pie",
@@ -168,11 +170,13 @@
                             { label: "Provosts' Council 1", y: 30 },
                             { label: "Academic Unit 2", y: 30 },
                             { label: "Academic Programs 2", y: 14 },
-                            { label: "UC/GPSC", y: 60 },
+                            { label: "UC/GPSC", y: 90 },
                             { label: "Provosts' Council 2", y: 30 },
                             { label: "Board of Regents", y: 90 },
                             { label: "Area Notification", y: 30 },
                             { label: "THECB", y: 60 },
+                            { label: "THECB CAWS", y: 90 },
+                            { label: "THECB Board Meeting", y: 30 },
                             { label: "US Department of Education", y: 45 },
                             { label: "Academic Unit and UH Stakeholders", y: 14 }
                         ]
@@ -242,7 +246,7 @@
             },
            
            clearProposal({stages}){
-            let normalDurations = [7, 14, 30, 30, 14, 60, 30, 90, 30, 60, 45, 14];
+            let normalDurations = [7, 14, 30, 30, 14, 90, 30, 90, 30, 60, 90, 30, 45, 14];
             for(let i = 0; i < stages.length; i++){
                 stages[i]['submission_date'] = '';
                 stages[i]['date_of_completion'] = '';
@@ -251,7 +255,7 @@
            },
 
            clearCalulatedDurationForChart(){
-            let normalDurations = [7, 14, 30, 30, 14, 60, 30, 90, 30, 60, 45, 14];  
+            let normalDurations = [7, 14, 30, 30, 14, 90, 30, 90, 30, 60, 90, 30, 45, 14];
             for(let i = 0; i < this.chartOptions['data'][0]['dataPoints'].length; i++){
                 this.chartOptions['data'][0]['dataPoints'][i]['y'] = normalDurations[i];
             }
@@ -266,19 +270,19 @@
                  case 'Friday':
                        // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
                         if(flag == 1 || flag == 2){
+                            stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
                             if(flag == 1){
-                                    alteredDate = moment(dateData, 'MM-DD-YYYY').add(0, 'days').format('l');
+                                    alteredDate = moment(dateData).add(0, 'days').format('l');
                                     stage[i]['submission_date'] = alteredDate;
                             }
                             if(flag == 2){
-                                alteredDate = moment(dateData, 'MM-DD-YYYY').add(0, 'days').format('l');
+                                alteredDate = moment(dateData).add(0, 'days').format('l');
                                 stage[i]['date_of_completion'] = alteredDate;
                             }
-                            stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
                             this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         } else {
                             // This is a regular date
-                            alteredDate = moment(dateData, 'MM-DD-YYYY').add(0, 'days').format('l');
+                            alteredDate = moment(dateData).add(0, 'days').format('l');
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
                             this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         }
@@ -286,19 +290,19 @@
 			    case 'Saturday':
                   // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
                     if(flag == 1 || flag == 2){
+                      stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
                             if(flag == 1){
-                                    alteredDate = moment(dateData, 'MM-DD-YYYY').add(2, 'days').format('l');
+                                    alteredDate = moment(dateData).add(2, 'days').format('l');
                                     stage[i]['submission_date'] = alteredDate;
                             }
                             if(flag == 2){
-                                    alteredDate = moment(dateData, 'MM-DD-YYYY').add(2, 'days').format('l');
+                                    alteredDate = moment(dateData).add(2, 'days').format('l');
                                         stage[i]['date_of_completion'] = alteredDate;
                             }
-                        stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
                         this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         }  else {
                         // This is a regular date
-                            alteredDate = moment(dateData, 'MM-DD-YYYY').add(2, 'days').format('l');
+                            alteredDate = moment(dateData).add(2, 'days').format('l');
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
                             this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         }
@@ -306,19 +310,19 @@
 			    case 'Sunday':
                        // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
                         if(flag == 1){
+                            stage[i]['duration'] = (parseInt(stage[i]['duration']) + 1);
                                 if(flag == 1){
-                                    alteredDate = moment(dateData, 'MM-DD-YYYY').add(1, 'days').format('l');
+                                    alteredDate = moment(dateData).add(1, 'days').format('l');
                                     stage[i]['submission_date'] = alteredDate;
                                 }
                                 if(flag == 2){
-                                    alteredDate = moment(dateData, 'MM-DD-YYYY').add(1, 'days').format('l');
+                                    alteredDate = moment(dateData).add(1, 'days').format('l');
                                         stage[i]['date_of_completion'] = alteredDate;
                                 }
-                            stage[i]['duration'] = (parseInt(stage[i]['duration']) + 1);    
                             this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];    
                             }  else {
                                 // This is a regular date
-                                alteredDate = moment(dateData, 'MM-DD-YYYY').add(1, 'days').format('l');
+                                alteredDate = moment(dateData).add(1, 'days').format('l');
                                 stage[i]['duration'] = (parseInt(stage[i]['duration']) + 1);
                                 this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                             }
@@ -334,12 +338,13 @@
 
            setNormalDates(stage, i){
            // console.log(`Object iterating ${JSON.stringify(stage, null, 2)}`);
-            let previousStageDateOfcompletion = stage[i - 1]['date_of_completion'];
+           let previousStageDateOfcompletion = stage[i - 1]['date_of_completion'];
             stage[i]['submission_date'] =  previousStageDateOfcompletion;
             let currentStageSubmissionDate = this.adjustDateOnAWeekend(stage, stage[i]['submission_date'], i, 1);
             let currentDateOfCompletion =  moment(currentStageSubmissionDate, 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
             stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
             console.log(`Adding ${stage[i]['duration']} days to ${stage[i]['submission_date']} to get ${currentDateOfCompletion}`);
+           
            },
 
 
@@ -354,17 +359,17 @@
                 let year = moment(previousStageDateOfCompletion).isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
                 let marchDeadline = this.adjustDateOnAWeekend(stage, '3/1/' + year, i, 3);
                 console.log(`Hiatus Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
-                if(moment(previousStageDateOfCompletion ,'MM-DD-YYYY').isAfter(marchDeadline)){
-                    if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBetween('3/2/'+year, '5/31/'+year) || moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBetween('6/1/'+year, '7/31/'+year)){
+                if(moment(previousStageDateOfCompletion).isAfter(marchDeadline)){
+                    if(moment(previousStageDateOfCompletion).isBetween('3/2/'+ year, '5/31/'+year) || moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBetween('6/1/'+year, '7/31/'+year)){
                          // Meeting  jumps to Sep
                         stage[i]['submission_date'] = this.adjustDateOnAWeekend(stage, '9/1/'+ year, i, 1);
-                        let currentStageSubmissionDate = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        let currentStageSubmissionDate = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                         stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentStageSubmissionDate, i, 2);
                     }
                     if(moment(previousStageDateOfCompletion).isAfter('7/31/'+ year)){
                         // Calculate dates normally
                         stage[i]['submission_date'] =  this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
-                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                         stage[i]['date_of_completion']   = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i , 2);
                     }
                 }
@@ -391,52 +396,52 @@
 			switch(month){
 				case 'Feb':
 				let febBoardMonth = this.adjustDateOnAWeekend(stage, '2/1/'+ year, i, 3);
-				let sixtyDaysBeforeFeb = moment(febBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
-				if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeFeb)){
+				let sixtyDaysBeforeFeb = moment(febBoardMonth).subtract(60, 'days').format('l');
+				if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeFeb)){
                     stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
-                    let currentDateOfCompletion = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    let currentDateOfCompletion = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                     stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
                 } else {
                     stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, '5/1/'+ year, i, 1);
-                    let currentDateOfCompletion = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    let currentDateOfCompletion = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                     stage[i]['date_of_completion']  =  this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
 				}
 				break;
 				case 'May':
 				let mayBoardMonth = this.adjustDateOnAWeekend(stage, '5/1/'+ year, i, 3);
-				let sixtyDaysBeforeMay = moment(mayBoardMonth,'MM-DD-YYYY').subtract(60, 'days').format('l');
-                if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeMay)){
+				let sixtyDaysBeforeMay = moment(mayBoardMonth).subtract(60, 'days').format('l');
+                if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeMay)){
                  stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];
-				 stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+				 stage[i]['date_of_completion'] = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
              	} else {
                     stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'8/1/'+ year, i, 1);
-                    let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    let currentDateOfCompletion  = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                     stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
 				}
 				break;
 				case 'Aug':
 				let augustBoardMonth = this.adjustDateOnAWeekend(stage, '8/1/'+ year, i, 3);
-				let sixtyDaysBeforeAugust = moment(augustBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
-                if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeAugust)){
+				let sixtyDaysBeforeAugust = moment(augustBoardMonth).subtract(60, 'days').format('l');
+                if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeAugust)){
                     stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
-                    let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    let currentDateOfCompletion  = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                     stage[i]['date_of_completion'] =  this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
                 } else {
                     stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, '11/1/'+ year,i, 3);
-                    let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    let currentDateOfCompletion  = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                     stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
                 }
 				break;
 				case 'Nov':
 				let novemeberBoardMonth = this.adjustDateOnAWeekend(stage, '11/1/'+ year, i, 3);
-				let sixtyDaysBeforeNovemeber = moment(novemeberBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
-                if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeNovemeber)){
+				let sixtyDaysBeforeNovemeber = moment(novemeberBoardMonth).subtract(60, 'days').format('l');
+                if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeNovemeber)){
                     stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
-                    let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    let currentDateOfCompletion  =  moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                     stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
                 } else {
                     stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'2/1/'+ (parseInt(year) + 1), i, 1);
-                    let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    let currentDateOfCompletion  = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
                     stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
                 }
 				break;
@@ -449,10 +454,9 @@
                 var currentMonthIndex  = moment()._d.getMonth();
                  console.log(`Proposal Arr passed in ${JSON.stringify(stages, null, 2)}`);
                 var chosenYear = moment(date, 'YYYY')._d.getFullYear().toString();
-                console.log(`Year User selected ${chosenYear}`);
                 let currentDateToday = moment().format('l');
                 let userInput = moment(date, 'MM-DD-YYYY').format('l');
-                console.log(`Date User selected ${moment(date, 'MM-DD-YYYY').format('l')}`);
+                console.log(`Date User selected ${moment(date).format('l')}`);
                 let isBeforeToday = moment(new Date(userInput).toISOString(), 'MM-DD-YYYY').isBefore(new Date(currentDateToday).toISOString());
                 if(!isBeforeToday){
                     for(let i = 0; i < stages.length; i++){
@@ -474,6 +478,12 @@
                             if(stages[i]['name'] === "Board of Regents"){
                                 this.dateAdjustmentForBoardOfRegentsMeeting(stages, chosenYear, i);
                             }
+                            if(stages[i]['name'] === "THECB CAWS"){
+                                this.adjustDateForCAWSQuarterly(stages, chosenYear, i);
+                            }
+                            if(stages[i]['name'] === "THECB Board Meeting"){
+                                this.adjustDateForCAWSBoardMeetingQuarterly(stages, chosenYear, i);
+                            }
                         }
                     }
                     
@@ -487,7 +497,147 @@
                         this.message = "You entered a date in the past! Please Try Again...";
                         return false;
                 }
-         }
+         },
+
+
+         adjustDateForCAWSQuarterly(stage, yearUserChose, i){
+            let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
+            let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
+            console.log(`Prv date of completion ${yearOfPrvDateOfCompletion.toString()}`);
+            let year = moment(previousStageDateOfCompletion).isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
+            console.log(`BoardOfRegentsMeeting Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
+            let  month  =  moment(previousStageDateOfCompletion).format("MMM");
+            console.log(`Month passed in ${month}`);
+                switch(month){
+                    case 'Mar':
+                        let marBoardMonth = this.adjustDateOnAWeekend(stage, '3/1/'+ year, i, 3);
+                        let sixtyDaysBeforeMar = moment(marBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                        if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeMar)){
+                        stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];
+                        stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        } else {
+                            stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'6/1/'+ year, i, 1);
+                            let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                            stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                        }
+                    break;
+                    case 'Jun':
+                    let junBoardMonth = this.adjustDateOnAWeekend(stage, '6/1/'+ year, i, 3);
+                    let sixtyDaysBeforeJun = moment(junBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                    // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeJun)){
+                        stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];  
+                        stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    } else {
+                        //Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'9/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Sep':
+                    let sepBoardMonth = this.adjustDateOnAWeekend(stage, '9/1/'+ year, i, 3);
+                    let sixtyDaysBeforeSep = moment(sepBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                    // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeSep)){
+                        stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];  
+                        stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    } else {
+                        //Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'12/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Dec':
+                    let decBoardMonth = this.adjustDateOnAWeekend(stage, '12/1/'+ year, i, 3);
+                    let sixtyDaysBeforeDec = moment(decBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                        if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeDec)){
+                            stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                            let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                            stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                        } else {
+                             //Jump to next board meeting month 
+                            stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'3/1/'+ (parseInt(year) + 1), i, 1);
+                            let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                            stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                        }
+                    break;
+                }
+         },
+
+         adjustDateForCAWSBoardMeetingQuarterly(stage, yearUserChose, i){
+            let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
+            let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
+            console.log(`Prv date of completion ${yearOfPrvDateOfCompletion.toString()}`);
+            let year = moment(previousStageDateOfCompletion).isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
+            console.log(`BoardOfRegentsMeeting Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
+            let  month  =  moment(previousStageDateOfCompletion).format("MMM");
+                switch(month){
+                    case 'Jan':
+                    let janBoardMonth = this.adjustDateOnAWeekend(stage, '1/1/'+ year, i, 3);
+                    let sixtyDaysBeforeJan = moment(janBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeJan)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'4/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Apr':
+                    let aprBoardMonth = this.adjustDateOnAWeekend(stage, '4/1/'+ year, i, 3);
+                    let sixtyDaysBeforeApr = moment(aprBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeApr)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'7/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Jul':
+                    let julBoardMonth = this.adjustDateOnAWeekend(stage, '7/1/'+ year, i, 3);
+                    let sixtyDaysBeforeJul = moment(julBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeJul)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'11/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Nov':
+                    let novBoardMonth = this.adjustDateOnAWeekend(stage, '11/1/'+ year, i, 3);
+                    let sixtyDaysBeforeNov = moment(novBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeNov)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'1/1/'+ (parseInt(year) + 1), i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    }
+                    break;
+                }
+         },
+
             
        },
       computed: {
