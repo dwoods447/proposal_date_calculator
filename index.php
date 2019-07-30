@@ -39,13 +39,20 @@
                             <v-date-picker v-model="date" @input="menu = false" color="red darken-4"></v-date-picker>
                         </v-menu>
                     </v-flex>
-                    <v-flex xs12 sm12 md2 pa-1>
+                    <v-flex xs12 sm12 md2 pa-1 v-if="!userSubmitted">
                         <v-btn dark depressed color="red darken-4" style="width: 100%; height: 56px;"@click="submitDate">Calculate</v-btn>
                     </v-flex>
                     <v-flex xs12 sm12 md2 pa-1>
                         <v-btn dark depressed color="red darken-4" style="width: 100%; height: 56px;" @click="clearDates">Clear</v-btn>
                     </v-flex>
+                   
                     </v-layout>
+                    <v-layout row wrap>
+                    <v-flex xs12 sm12 md12 v-if="message">
+                        <p style="color: red;">{{ message }}</p>
+                    </v-flex>
+                    </v-layout>
+              </v-layout>
                 </v-form>
                 </v-flex>
                 <v-flex xs12 sm12 md12>
@@ -61,10 +68,33 @@
         <br/>
         <br/>
         <v-content>
-      
-        <v-flex xs12 sm12 md12>
-                     <div id="chartContainer" style="height: 360px; width: 100%;"></div>
-                </v-flex>
+        <v-layout wrap>
+            <v-flex xs12 sm6 md6>
+                        <div id="chartContainer" style="height: 360px; width: 100%;"></div>
+            </v-flex>
+            <v-flex xs12 sm6 md6>
+                        <v-card>
+                            <v-list-item>
+                                <v-list-item-content>
+                                    <v-list-item-title><h2>Total Duration in Days: &nbsp;{{ totalDays }}</h2></v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                            <v-divider></v-divider>
+                            <v-list-item>
+                                <v-list-item-content>
+                                    <v-list-item-title><h2>Total Duration in Months: &nbsp;{{ totalMonths }}</h2></v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                            <v-divider></v-divider>
+                            <v-list-item>
+                                <v-list-item-content>
+                                    <v-list-item-title><h2>Total Duration in Years: &nbsp;{{ totalYears }}</h2></v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                            <v-divider></v-divider>
+                        </v-card>
+            </v-flex>
+        </v-layout>
         </v-content>
         </v-container>
     </v-app>
@@ -83,6 +113,8 @@
         },
         data() {
           return {
+              userSubmitted: false,
+              message: '',
               header: 'Proposal Calculator',
               date: new Date().toISOString().substr(0, 10),
               dateFormatted: this.formatDate(this.date),
@@ -129,21 +161,41 @@
                             { label: "Provost", y: 14 },
                             { label: "Provosts' Council 1", y: 30 },
                             { label: "Academic Unit 2", y: 30 },
-                            { label: "Academic Programs 2", y: 95 },
-                            { label: "UC/GPSC", y: 68 },
-                            { label: "Provosts' Council 2", y: 28 },
-                            { label: "Board of Regents", y: 34 },
-                            { label: "Area Notification", y: 34 },
-                            { label: "THECB", y: 14 },
-                            { label: "US Department of Education", y: 14 },
+                            { label: "Academic Programs 2", y: 14 },
+                            { label: "UC/GPSC", y: 60 },
+                            { label: "Provosts' Council 2", y: 30 },
+                            { label: "Board of Regents", y: 90 },
+                            { label: "Area Notification", y: 30 },
+                            { label: "THECB", y: 60 },
+                            { label: "US Department of Education", y: 45 },
                             { label: "Academic Unit and UH Stakeholders", y: 14 }
                         ]
                     }]
               },
                
+              totalDays: 0,
+              totalMonths: 0,
+              totalYears: 0, 
           }
         },
        methods: {
+           clearTotals(){
+            this.totalDays = 0;
+            this.totalMonths = 0;
+            this.totalYears = 0;
+           },
+           calculateTotals(){
+            let submissionDate = moment(this.proposal.stages[0].submission_date);
+            console.log(`Submission Date: ${JSON.stringify(submissionDate)}`);
+            let proposalDate = moment(this.proposal.stages[this.proposal.stages.length - 1].date_of_completion);
+            console.log(`Completion Date: ${JSON.stringify(proposalDate)}`);
+            this.totalDays = proposalDate.diff(submissionDate, 'days');
+            console.log(`Days: ${JSON.stringify(this.totalDays)}`);
+            this.totalMonths = proposalDate.diff(submissionDate, 'months');
+            console.log(`Months: ${JSON.stringify(this.totalMonths)}`);
+            this.totalYears = proposalDate.diff(submissionDate, 'years');
+            console.log(`Years: ${JSON.stringify(this.totalYears)}`);
+           },
             showPieChart(){
                 this.chart = new CanvasJS.Chart("chartContainer", this.chartOptions);
                 this.chart.render();
@@ -161,13 +213,24 @@
 
             submitDate(){
               if(this.dateFormatted){
-                this.calculateDates(this.proposal, this.dateFormatted);
-                // this.clearDates();
+                this.message = "";  
+                this.userSubmitted = true;  
+                let success = this.calculateDates(this.proposal, this.dateFormatted);
+                if(success){
+                    this.calculateTotals();
+                    this.showPieChart();
+                }
+               
               }
             },
             clearDates(){
              this.dateFormatted = '';
+             this.message = "";  
 		     this.clearProposal(this.proposal);
+             this.userSubmitted = false; 
+             this.clearCalulatedDurationForChart();
+             this.clearTotals();
+             this.showPieChart(); 
             },
            
            clearProposal({stages}){
@@ -179,6 +242,13 @@
             }	
            },
 
+           clearCalulatedDurationForChart(){
+            let normalDurations = [7, 14, 30, 30, 14, 60, 30, 90, 30, 60, 45, 14];  
+            for(let i = 0; i < this.chartOptions['data'][0]['dataPoints'].length; i++){
+                this.chartOptions['data'][0]['dataPoints'][i]['y'] = normalDurations[i];
+            }
+           },
+
            adjustDateOnAWeekend(stage, dateData, i, flag){
                 //console.log(`Adjustiing Date Data passed in ${JSON.stringify(dateData)}`);
                 let alteredDate;
@@ -188,60 +258,66 @@
                  case 'Friday':
                        // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
                         if(flag == 1 || flag == 2){
-                        stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
-                        if(flag == 1){
+                            stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
+                            if(flag == 1){
+                                    alteredDate = moment(dateData).add(0, 'days').format('l');
+                                    stage[i]['submission_date'] = alteredDate;
+                            }
+                            if(flag == 2){
                                 alteredDate = moment(dateData).add(0, 'days').format('l');
-                                stage[i]['submission_date'] = alteredDate;
-                        }
-                        if(flag == 2){
-                            alteredDate = moment(dateData).add(0, 'days').format('l');
-                            stage[i]['date_of_completion'] = alteredDate;
-                        }
+                                stage[i]['date_of_completion'] = alteredDate;
+                            }
+                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         } else {
                             // This is a regular date
                             alteredDate = moment(dateData).add(0, 'days').format('l');
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
+                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         }
 			    break;
 			    case 'Saturday':
                   // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
                     if(flag == 1 || flag == 2){
-                            stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
-                        if(flag == 1){
-                                alteredDate = moment(dateData).add(2, 'days').format('l');
-                                stage[i]['submission_date'] = alteredDate;
-                        }
-                        if(flag == 2){
-                                alteredDate = moment(dateData).add(2, 'days').format('l');
-                                    stage[i]['date_of_completion'] = alteredDate;
-                        }
+                      stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
+                            if(flag == 1){
+                                    alteredDate = moment(dateData).add(2, 'days').format('l');
+                                    stage[i]['submission_date'] = alteredDate;
+                            }
+                            if(flag == 2){
+                                    alteredDate = moment(dateData).add(2, 'days').format('l');
+                                        stage[i]['date_of_completion'] = alteredDate;
+                            }
+                        this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         }  else {
                         // This is a regular date
                             alteredDate = moment(dateData).add(2, 'days').format('l');
-                        stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
+                            stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
+                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                         }
 			    break;
 			    case 'Sunday':
                        // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
                         if(flag == 1){
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 1);
-                            
-                            if(flag == 1){
-                                alteredDate = moment(dateData).add(1, 'days').format('l');
-                                stage[i]['submission_date'] = alteredDate;
-                            }
-                            if(flag == 2){
-                                alteredDate = moment(dateData).add(1, 'days').format('l');
-                                    stage[i]['date_of_completion'] = alteredDate;
-                            }
+                                if(flag == 1){
+                                    alteredDate = moment(dateData).add(1, 'days').format('l');
+                                    stage[i]['submission_date'] = alteredDate;
+                                }
+                                if(flag == 2){
+                                    alteredDate = moment(dateData).add(1, 'days').format('l');
+                                        stage[i]['date_of_completion'] = alteredDate;
+                                }
+                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];    
                             }  else {
                                 // This is a regular date
                                 alteredDate = moment(dateData).add(1, 'days').format('l');
                                 stage[i]['duration'] = (parseInt(stage[i]['duration']) + 1);
+                                this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                             }
 			    break;
                 default:
                         alteredDate = dateData;
+                        this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
                     break;
 		        } // End of Switch
 
@@ -264,9 +340,9 @@
            },
 
            hiatusDateAdjustment (yearUserChose, stage, i) {
-                let marchDealine = this.adjustDateOnAWeekend(stage, '3/1/' + yearUserChose, i, 3);
+                let marchDeadline = this.adjustDateOnAWeekend(stage, '3/1/' + yearUserChose, i, 3);
                 let previousStageDateOfCompletion  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 2);
-                if(moment(previousStageDateOfCompletion).isAfter(marchDealine)){
+                if(moment(previousStageDateOfCompletion).isAfter(marchDeadline)){
                     // console.log(`The entered date 'IS' after the March 31st dealine`);
                     stage[i]['submission_date'] = this.adjustDateOnAWeekend(stage, '9/1/'+ yearUserChose, i, 1);
                     let currentStageSubmissionDate = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
@@ -363,7 +439,7 @@
                                 // This will be user's input
                                 console.log(`Chart Obj ${JSON.stringify(this.chartOptions['data'][0]['dataPoints'][i]['y'])}`);
                             let seventDaysFromNow = moment(userInput).add(stages[i]['duration'], 'days').format('l');
-                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = seventDaysFromNow;
+                                this.chartOptions['data'][0]['dataPoints'][i]['y'] = seventDaysFromNow;
                                 stages[i]['submission_date'] = this.adjustDateOnAWeekend(stages, userInput, i, 1);	
                                 stages[i]['date_of_completion'] = this.adjustDateOnAWeekend(stages, seventDaysFromNow, i, 2);
                         } 
@@ -377,13 +453,16 @@
                             }
                         }
                     }
-                    console.log(`Proposal 1: Poulated ${JSON.stringify(this.proposal, null, 2)}`);     
+                    
+                    console.log(`Proposal 1: Poulated ${JSON.stringify(this.proposal, null, 2)}`);
+                   return true;
                 /*  console.log(`Proposal 2: Poulated ${JSON.stringify(proposalTwo, null, 2)}`);
                 console.log(`Proposal 3: Poulated ${JSON.stringify(proposalThree, null, 2)}`);  */
                 }   else {
                       // User entered Date in the past
                         console.log('You entered a date in the past!');
-                        return;
+                        this.message = "You entered a date in the past! Please Try Again...";
+                        return false;
                 }
          }
             
