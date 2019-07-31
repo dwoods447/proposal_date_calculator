@@ -67,6 +67,7 @@
                      class="elevation-1"
                      :items-per-page="15"
                      :hide-default-footer="hideFooter"
+                     disable-sort
                     ></v-data-table>
                 </v-flex>
         </v-content>
