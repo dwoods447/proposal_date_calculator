@@ -31,8 +31,7 @@
                             min-width="290px"
                             >
                             <template v-slot:activator="{ on }">
-                            <div>
-                                 <v-text-field
+                                <v-text-field
                                 v-model="dateFormatted"
                                 label="Enter Your Proposal Submission Date"
                                 hint="MM/DD/YYYY format"
@@ -42,7 +41,6 @@
                                 @blur="date = parseDate(dateFormatted)"
                                 v-on="on"
                                 ></v-text-field>
-                            </div>
                             </template>
                             <v-date-picker v-model="date" @input="menu = false" color="red darken-4"></v-date-picker>
                         </v-menu>
@@ -152,11 +150,14 @@
                     {name: "Provosts' Council 1", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Monthly'},
                     {name: "Academic Unit 2", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Preparation of THECB documentation'},
                     {name: "Academic Programs 2", submission_date: 'n/a', duration: 14, date_of_completion: 'n/a', notes: 'THECB Documentation Review'},
-                    {name: "UC/GPSC", submission_date: 'n/a', duration: 60, date_of_completion: 'n/a', notes: 'Monthly - Summer Hiatus June - Aug'},
+                    {name: "UC/GPSC", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Monthly - Summer Hiatus June - Aug'},
                     {name: "Provosts' Council 2", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Monthly'},
                     {name: "Board of Regents", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Quarterly'},
                     {name: "Area Notification", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Notification of all institutions (50 miles)'},
                     {name: "THECB", submission_date: 'n/a', duration: 60, date_of_completion: 'n/a', notes: 'THECB Staff Review'},
+                    {name: "THECB Site Review", submission_date: 'n/a', duration: 60, date_of_completion: 'n/a', notes: 'THECB Site Review'},
+                    {name: "THECB CAWS", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Quarterly'},
+                    {name: "THECB Board Meeting", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Quarterly'},
                     {name: "US Department of Education", submission_date: 'n/a' , duration: 45, date_of_completion: 'n/a', notes: 'Financial Aid Eligibility'},
                     {name: "Academic Unit and UH Stakeholders", submission_date: 'n/a', duration: 14, date_of_completion: 'n/a', notes: 'PeopleSoft implementation, Catalog implementation, Application software updated, program available to applicants)'},	
                 ],
@@ -165,7 +166,7 @@
               chartOptions: {
                     animationEnabled: true,
                     title: {
-                    text: "New Bachelor's and Master's Programs with costs under $2M in first five years",
+                    text: "New Doctoral Programs",
                 },
                 data: [{
                     type: "pie",
@@ -178,11 +179,14 @@
                             { label: "Provosts' Council 1", y: 30 },
                             { label: "Academic Unit 2", y: 30 },
                             { label: "Academic Programs 2", y: 14 },
-                            { label: "UC/GPSC", y: 60 },
+                            { label: "UC/GPSC", y: 90 },
                             { label: "Provosts' Council 2", y: 30 },
                             { label: "Board of Regents", y: 90 },
                             { label: "Area Notification", y: 30 },
                             { label: "THECB", y: 60 },
+                            {label:  "THECB Site Review", y: 60},
+                            { label: "THECB CAWS", y: 90 },
+                            { label: "THECB Board Meeting", y: 30 },
                             { label: "US Department of Education", y: 45 },
                             { label: "Academic Unit and UH Stakeholders", y: 14 }
                         ]
@@ -192,8 +196,7 @@
               totalDays: 0,
               totalWeeks: 0,
               totalMonths: 0,
-              totalYears: 0,
-              
+              totalYears: 0, 
           }
         },
        methods: {
@@ -229,7 +232,7 @@
             submitDate(){
               if(this.dateFormatted){
                 this.message = "";  
-                this.userSubmitted = true;
+                this.userSubmitted = true; 
                 this.inputDisabled = true;
                 let success = this.calculateDates(this.proposal, this.dateFormatted);
                 if(success){
@@ -241,7 +244,7 @@
               }
             },
             clearDates(){
-             this.inputDisabled = false;
+             this.inputDisabled = false;   
              this.dateFormatted = '';
              this.message = "";  
 		     this.clearProposal(this.proposal);
@@ -253,7 +256,7 @@
             },
            
            clearProposal({stages}){
-            let normalDurations = [7, 14, 30, 30, 14, 60, 30, 90, 30, 60, 45, 14];
+            let normalDurations = [7, 14, 30, 30, 14, 90, 30, 90, 30, 60, 90, 30, 45, 14];
             for(let i = 0; i < stages.length; i++){
                 stages[i]['submission_date'] = '';
                 stages[i]['date_of_completion'] = '';
@@ -262,7 +265,7 @@
            },
 
            clearCalulatedDurationForChart(){
-            let normalDurations = [7, 14, 30, 30, 14, 60, 30, 90, 30, 60, 45, 14];  
+            let normalDurations = [7, 14, 30, 30, 14, 90, 30, 90, 30, 60, 90, 30, 45, 14];
             for(let i = 0; i < this.chartOptions['data'][0]['dataPoints'].length; i++){
                 this.chartOptions['data'][0]['dataPoints'][i]['y'] = normalDurations[i];
             }
@@ -270,14 +273,10 @@
 
            adjustDateOnAWeekend(stage, dateData, i, flag){
                 //console.log(`Adjustiing Date Data passed in ${JSON.stringify(dateData)}`);
-                /*
-                * This function adjust the date of the days that fall on a weekend. It also updates the duration with days added
-                * it takes as arguments the stage array, the passed in date , index, and a flag that identifies the type of date
-                ***/
                 let alteredDate;
-                //Get the day of the week ex. Friday
                 let day = moment(dateData).format('dddd');
-                switch(day){
+               // console.log(`This date day is on a :${day}`);
+               switch(day){
                  case 'Friday':
                        // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
                        // Check the flag og the date and determine the date type
@@ -374,16 +373,18 @@
 
            setNormalDates(stage, i){
            // console.log(`Object iterating ${JSON.stringify(stage, null, 2)}`);
-            let previousStageDateOfcompletion = stage[i - 1]['date_of_completion'];
+           let previousStageDateOfcompletion = stage[i - 1]['date_of_completion'];
             stage[i]['submission_date'] =  previousStageDateOfcompletion;
             let currentStageSubmissionDate = this.adjustDateOnAWeekend(stage, stage[i]['submission_date'], i, 1);
             let currentDateOfCompletion =  moment(currentStageSubmissionDate, 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
             stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
             console.log(`Adding ${stage[i]['duration']} days to ${stage[i]['submission_date']} to get ${currentDateOfCompletion}`);
+           
            },
 
 
            isOnAHiatus(currentMonthIndex){
+            //Returns true if the index gathered from date the user entered is between Jun to Aug   
             return currentMonthIndex  > 4  && currentMonthIndex < 8 ? true: false;
            },
 
@@ -416,68 +417,68 @@
                     }
                 }
 		
+		
             },
 
 
             dateAdjustmentForBoardOfRegentsMeeting(stage, yearUserChose, i){
-             /**
+  	         /**
              *  This function adjusts the proposal date calculation at the stage 'Board of Regents'
              *  The function check the previous stage's date of completion and tests if it is sixty days
              *  prior to the quaterly board meeting
              *  it takes as arguments the stage array, the date user entered, and the current iteration index
              **/
-
-            //Get the previous stage's date of completion
-			let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
-            // Get the full Year of the previous stage's date of completion
-            let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
-            console.log(`Prv date of completion ${yearOfPrvDateOfCompletion.toString()}`);
-            // Get the month index of the previous stage's date of completion    
-			let  monthIndex = moment(previousStageDateOfCompletion)._d.getMonth();
-             // Get the month  ex. Feb        
-			let  month  =  moment(previousStageDateOfCompletion).format("MMM");
-             // Check if the previous stage's date of completion is after year user entered if it is then return that year if its not then return the year the user entered   
-            let year = moment(previousStageDateOfCompletion).isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
-            console.log(`BoardOfRegentsMeeting Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
-			switch(month){
-				case 'Feb':
-                //Check if the previous stage's date of completion month is in Feb
-				let febBoardMonth = this.adjustDateOnAWeekend(stage, '2/1/'+ year, i, 3);
-                  //Calculate sixty days before the first of the board meeting month and get that date
-				let sixtyDaysBeforeFeb = moment(febBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
-                 //Check if the previous stage's date of completion is before the date that is sixty days before the board meeting month
-				if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeFeb)){
-                      // If previous stage's date of completion IS PRIOR to that date that is 60days before board meeting 
-                    // then calculate dates normally
-                    stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
-                    let currentDateOfCompletion = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
-                    stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
-                } else {
-                     // If previous stage's date of completion IS NOT PRIOR to that date that is 60 days before board meeting 
-                    // then jump to next board meeting month
-                    stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, '5/1/'+ year, i, 1);
-                    let currentDateOfCompletion = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
-                    stage[i]['date_of_completion']  =  this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
-				}
-				break;
-				case 'May':
-                 //Check if the previous stage's date of completion month is in May
-				let mayBoardMonth = this.adjustDateOnAWeekend(stage, '5/1/'+ year, i, 3);
-                 //Calculate sixty days before the first of the board meeting month and get that date
-				let sixtyDaysBeforeMay = moment(mayBoardMonth,'MM-DD-YYYY').subtract(60, 'days').format('l');
-                //Check if the previous stage's date of completion is before the date that is sixty days before the board meeting month
-                if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeMay)){
-                     // If previous stage's date of completion IS PRIOR to that date that is 60days before board meeting 
-                    // then calculate dates normally
-                 stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];
-				 stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
-             	} else {
-                       // If previous stage's date of completion  IS NOT PRIOR to that date that is 60 days before board meeting 
-                    // then jump to next board meeting month
-                    stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'8/1/'+ year, i, 1);
-                    let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
-                    stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
-				}
+                //Get the previous stage's date of completion
+                let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
+                // Get the full Year of the previous stage's date of completion
+                let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
+                console.log(`Prv date of completion ${yearOfPrvDateOfCompletion.toString()}`);
+                // Get the month index of the previous stage's date of completion       
+                let  monthIndex = moment(previousStageDateOfCompletion)._d.getMonth();
+                let  month  =  moment(previousStageDateOfCompletion).format("MMM");
+                // Check if the previous stage's date of completion is after year user entered if it is then return that year if its not then return the year the user entered
+                let year = moment(previousStageDateOfCompletion).isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
+                // Get the month  ex. Feb   
+                console.log(`BoardOfRegentsMeeting Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
+                switch(month){
+                    case 'Feb':
+                    //Check if the previous stage's date of completion month is in Feb
+                    let febBoardMonth = this.adjustDateOnAWeekend(stage, '2/1/'+ year, i, 3);
+                    //Calculate sixty days before the first of the board meeting month and get that date
+                    let sixtyDaysBeforeFeb = moment(febBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                    //Check if the previous stage's date of completion is before the date that is sixty days before the board meeting month
+                    if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeFeb)){
+                        // If previous stage's date of completion IS PRIOR to that date that is 60days before board meeting 
+                        // then calculate dates normally
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                        // If previous stage's date of completion IS NOT PRIOR to that date that is 60 days before board meeting 
+                        // then jump to next board meeting month
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, '5/1/'+ year, i, 1);
+                        let currentDateOfCompletion = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion']  =  this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    }
+                    break;
+                    case 'May':
+                    //Check if the previous stage's date of completion month is in May
+                    let mayBoardMonth = this.adjustDateOnAWeekend(stage, '5/1/'+ year, i, 3);
+                    //Calculate sixty days before the first of the board meeting month and get that date
+                    let sixtyDaysBeforeMay = moment(mayBoardMonth,'MM-DD-YYYY').subtract(60, 'days').format('l');
+                    //Check if the previous stage's date of completion is before the date that is sixty days before the board meeting month
+                    if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBefore(sixtyDaysBeforeMay)){
+                        // If previous stage's date of completion IS PRIOR to that date that is 60days before board meeting 
+                        // then calculate dates normally
+                    stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];
+                    stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    } else {
+                        // If previous stage's date of completion  IS NOT PRIOR to that date that is 60 days before board meeting 
+                        // then jump to next board meeting month
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'8/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    }
 				break;
 				case 'Aug':
                  //Check if the previous stage's date of completion month is in Aug
@@ -526,14 +527,13 @@
 
         calculateDates({stages}, date){
                 var currentMonthIndex  = moment(date)._d.getMonth();
-                // console.log(`Month index ${currentMonthIndex}`);
-                // console.log(`Proposal Arr passed in ${JSON.stringify(stages, null, 2)}`);
+                console.log(`Month index ${currentMonthIndex}`);
+                 console.log(`Proposal Arr passed in ${JSON.stringify(stages, null, 2)}`);
                 var chosenYear = moment(date, 'YYYY')._d.getFullYear().toString();
-                console.log(`Year User selected ${chosenYear}`);
                 let currentDateToday = moment().format('l');
                 let userInput = moment(date, 'MM-DD-YYYY').format('l');
+                console.log(`Date User selected ${moment(date).format('l')}`);
                 let isBeforeToday = moment(userInput, 'MM-DD-YYYY').isBefore(new Date(currentDateToday).toISOString());
-                console.log(`Date is before today: ${isBeforeToday}`);
                 if(!isBeforeToday){
                     for(let i = 0; i < stages.length; i++){
                         if(i < 1){
@@ -547,8 +547,6 @@
                                 this.chartOptions['data'][0]['dataPoints'][i]['y'] = stages[i]['duration'];
                         } 
                         else {
-                            // This will caluclate the dates normally by adding duration to the submisson date
-                            // to get the date of completion
                             this.setNormalDates(stages, i);
                             if(this.isOnAHiatus(currentMonthIndex) && stages[i]['name'] === "UC/GPSC"){
                                 this.hiatusDateAdjustment(chosenYear, stages, i);
@@ -556,19 +554,166 @@
                             if(stages[i]['name'] === "Board of Regents"){
                                 this.dateAdjustmentForBoardOfRegentsMeeting(stages, chosenYear, i);
                             }
+                            if(stages[i]['name'] === "THECB CAWS"){
+                                this.adjustDateForCAWSQuarterly(stages, chosenYear, i);
+                            }
+                            if(stages[i]['name'] === "THECB Board Meeting"){
+                                this.adjustDateForCAWSBoardMeetingQuarterly(stages, chosenYear, i);
+                            }
                         }
                     }
-                   console.log(`Proposal 1: Poulated ${JSON.stringify(this.proposal, null, 2)}`);
+                    
+                    console.log(`Proposal 2: Poulated ${JSON.stringify(this.proposal, null, 2)}`);
                    return true; // function is done executing return true
-                    /*console.log(`Proposal 2: Poulated ${JSON.stringify(proposalTwo, null, 2)}`);
-                    console.log(`Proposal 3: Poulated ${JSON.stringify(proposalThree, null, 2)}`);  */
+                /*  console.log(`Proposal 2: Poulated ${JSON.stringify(proposalTwo, null, 2)}`);
+                console.log(`Proposal 3: Poulated ${JSON.stringify(proposalThree, null, 2)}`);  */
                 }   else {
                       // User entered Date in the past
                         console.log('You entered a date in the past!');
                         this.message = "You entered a date in the past! Please Try Again...";
                         return false;
                 }
-         }
+         },
+
+
+         adjustDateForCAWSQuarterly(stage, yearUserChose, i){
+            let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
+            let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
+            console.log(`Prv date of completion ${yearOfPrvDateOfCompletion.toString()}`);
+            let year = moment(previousStageDateOfCompletion).isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
+            console.log(`BoardOfRegentsMeeting Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
+            let  month  =  moment(previousStageDateOfCompletion).format("MMM");
+            console.log(`Month passed in ${month}`);
+                switch(month){
+                    case 'Mar':
+                        let marBoardMonth = this.adjustDateOnAWeekend(stage, '3/1/'+ year, i, 3);
+                        let sixtyDaysBeforeMar = moment(marBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                        if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeMar)){
+                        stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];
+                        stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        } else {
+                            stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'6/1/'+ year, i, 1);
+                            let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                            stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                        }
+                    break;
+                    case 'Jun':
+                    let junBoardMonth = this.adjustDateOnAWeekend(stage, '6/1/'+ year, i, 3);
+                    let sixtyDaysBeforeJun = moment(junBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                    // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeJun)){
+                        stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];  
+                        stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    } else {
+                        //Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'9/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Sep':
+                    let sepBoardMonth = this.adjustDateOnAWeekend(stage, '9/1/'+ year, i, 3);
+                    let sixtyDaysBeforeSep = moment(sepBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                    // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeSep)){
+                        stage[i]['submission_date']  = stage[i - 1]['date_of_completion'];  
+                        stage[i]['date_of_completion'] = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                    } else {
+                        //Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'12/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date']).add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Dec':
+                    let decBoardMonth = this.adjustDateOnAWeekend(stage, '12/1/'+ year, i, 3);
+                    let sixtyDaysBeforeDec = moment(decBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                        if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeDec)){
+                            stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                            let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                            stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                        } else {
+                             //Jump to next board meeting month 
+                            stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'3/1/'+ (parseInt(year) + 1), i, 1);
+                            let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                            stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                        }
+                    break;
+                }
+         },
+
+         adjustDateForCAWSBoardMeetingQuarterly(stage, yearUserChose, i){
+            let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
+            let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
+            console.log(`Prv date of completion ${yearOfPrvDateOfCompletion.toString()}`);
+            let year = moment(previousStageDateOfCompletion).isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
+            console.log(`BoardOfRegentsMeeting Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
+            let  month  =  moment(previousStageDateOfCompletion).format("MMM");
+                switch(month){
+                    case 'Jan':
+                    let janBoardMonth = this.adjustDateOnAWeekend(stage, '1/1/'+year, i, 3);
+                    let sixtyDaysBeforeJan = moment(janBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeJan)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'4/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Apr':
+                    let aprBoardMonth = this.adjustDateOnAWeekend(stage, '4/1/'+ year, i, 3);
+                    let sixtyDaysBeforeApr = moment(aprBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeApr)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'7/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Jul':
+                    let julBoardMonth = this.adjustDateOnAWeekend(stage, '7/1/'+ year, i, 3);
+                    let sixtyDaysBeforeJul = moment(julBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeJul)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'11/1/'+ year, i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);    
+                    }
+                    break;
+                    case 'Nov':
+                    let novBoardMonth = this.adjustDateOnAWeekend(stage, '11/1/'+ year, i, 3);
+                    let sixtyDaysBeforeNov = moment(novBoardMonth, 'MM-DD-YYYY').subtract(60, 'days').format('l');
+                      // check if prev date of completion is before jun meeting
+                    if(moment(previousStageDateOfCompletion).isBefore(sixtyDaysBeforeNov)){
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage, stage[i - 1]['date_of_completion'], i, 1);
+                        let currentDateOfCompletion  =  moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    } else {
+                         // Jump to next board meeting month 
+                        stage[i]['submission_date']  = this.adjustDateOnAWeekend(stage,'1/1/'+ (parseInt(year) + 1), i, 1);
+                        let currentDateOfCompletion  = moment(stage[i]['submission_date'], 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
+                        stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
+                    }
+                    break;
+                }
+         },
+
             
        },
       computed: {

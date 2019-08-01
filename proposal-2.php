@@ -1,131 +1,128 @@
-<?php
 
+    
 
-?>
+        <style>
+         @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css");
+        </style>
 
-  <!-- <link href="https://cdn.jsdelivr.net/npm/@mdi/font@3.x/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet"> -->
-    <style>
-        @import url("https://cdn.jsdelivr.net/npm/@mdi/font@3.x/css/materialdesignicons.min.css");
-    </style>
-    <style>
-        @import url("https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css");
-    </style>
-    <div id="programCalculator">
-    <v-app>
-        <v-container>
-        <v-content>
-        <v-layout wrap>
-                <v-flex xs12 sm12 md12>
-                <v-form>
-                <v-layout wrap>
-                    <v-flex xs12 sm12 md8 pa-1>
-                        <v-menu
-                            ref="menu"
-                            v-model="menu"
-                            :close-on-content-click="false"
-                            transition="scale-transition"
-                            offset-y
-                            full-width
-                            max-width="290px"
-                            min-width="290px"
-                            >
-                            <template v-slot:activator="{ on }">
-                                <v-text-field
-                                v-model="dateFormatted"
-                                label="Enter Your Proposal Submission Date"
-                                hint="MM/DD/YYYY format"
-                                persistent-hint
-                                outlined
-                                :disabled="inputDisabled"
-                                @blur="date = parseDate(dateFormatted)"
-                                v-on="on"
-                                ></v-text-field>
-                            </template>
-                            <v-date-picker v-model="date" @input="menu = false" color="red darken-4"></v-date-picker>
-                        </v-menu>
-                    </v-flex>
-                    <v-flex xs12 sm12 md2 pa-1 v-if="!userSubmitted">
-                        <v-btn dark depressed color="red darken-4" style="width: 100%; height: 56px;"@click="submitDate">Calculate</v-btn>
-                    </v-flex>
-                    <v-flex xs12 sm12 md2 pa-1>
-                        <v-btn dark depressed color="red darken-4" style="width: 100%; height: 56px;" @click="clearDates">Clear</v-btn>
-                    </v-flex>
-                   
-                    </v-layout>
-                    <v-layout row wrap>
-                    <v-flex xs12 sm12 md12 v-if="message">
-                        <p style="color: red; margin-left: 20px;">{{ message }}</p>
-                    </v-flex>
-                    </v-layout>
-              </v-layout>
-                </v-form>
-                </v-flex>
-                <v-flex xs12 sm12 md12>
-                    <v-data-table
-                    :headers="headers"
-                    :items="proposalStages"
-                     class="elevation-1"
-                     :items-per-page="15"
-                     :hide-default-footer="hideFooter"
-                     disable-sort
-                    ></v-data-table>
-                </v-flex>
-        </v-content>
-        <br/>
-        <br/>
-        <div>
-        <v-layout wrap>
-            <v-flex xs12 sm6 md6 style="width: 100%;" pa-1>
-                        <div id="chartContainer" style="height: 360px; width: 100%;"></div>
-            </v-flex>
-            <v-flex xs12 sm6 md6 pa-1>
-                        <v-card>
-                            <v-list-item>
-                                <v-list-item-content>
-                                    <v-list-item-title><h2>Total Duration in Days: &nbsp;{{ totalDays }}</h2></v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                            <v-divider></v-divider>
-                            <v-list-item>
-                                <v-list-item-content>
-                                    <v-list-item-title><h2>Total Duration in Weeks: &nbsp;{{ totalWeeks }}</h2></v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                            <v-divider></v-divider>
-                            <v-list-item>
-                                <v-list-item-content>
-                                    <v-list-item-title><h2>Total Duration in Months: &nbsp;{{ totalMonths }}</h2></v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                            <v-divider></v-divider>
-                            <v-list-item>
-                                <v-list-item-content>
-                                    <v-list-item-title><h2>Total Duration in Years: &nbsp;{{ totalYears }}<span v-if="this.totalMonths > 12">+</span></h2></v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                            <v-divider></v-divider>
-                        </v-card>
-            </v-flex>
-        </v-layout>
+        <style>
+          @import url('https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css');
+        </style>
+
+        <style>
+        @import url("https://cdn.jsdelivr.net/npm/pc-bootstrap4-datetimepicker@4.17/build/css/bootstrap-datetimepicker.min.css");
+        </style>
+
+        <style>
+         @import url("//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css");
+        </style>
+
+<div id="programCalculator">
+        <div class="container-fluid">
+        <h2>{{header}}</h2>
+            <div class="row">
+                    <div class="col-lg-12">
+                        <form @submit.prevent="submitDate()">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="input-group date">
+                                     <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon2"><i class="fas fa-2x fa-calendar-alt"></i></span>
+                                    </div>
+                                    <date-picker v-validate="'required|date_format:MM/dd/yyyy'" name="dateFormatted" placeholder="MM/DD/YYYY" v-model="dateFormatted" :disabled="inputDisabled" :config="options" style="height: 49px;"></date-picker>
+                                </div>
+                            </div>   
+                            <div class="col-lg-2" v-if="!userSubmitted">
+                                <b-button size="lg" @click="submitDate" style="width: 100%;">Calculate</b-button>
+                            </div>
+                            <div class="col-lg-2">
+                                <b-button size="lg" @click="clearDates" style="width: 100%;">Clear</b-button>
+                            </div>
+                            <div class="col-lg-12"><p style="color: red; margin-left: 20px;">{{message}}</p></div>
+                            <ul>
+                                    <li v-for="error in errors.collect('dateFormatted')" style="color: red; margin-left: 20px;">{{ error }}</li>
+                            </ul>
+                         </div>
+                     </form>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div>
+                                    <!-- Boostrap-Vue Proposal Table Component-->
+                                    <b-table striped hover :items="proposalStages" :fields="headers"></b-table>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                    <br/>
+                    <br/>
+                    <div class="col-6">
+                    <div id="chartContainer" style="height: 360px; width: 100%;"></div>
+                    </div>
+                    <div class="col-6">
+                    <ul class="list-group">
+                        <li class="list-group-item"><h3>Total Duration in Days: &nbsp;{{ totalDays }}</h3></li>
+                        <li class="list-group-item"><h3>Total Duration in Weeks: &nbsp;{{ totalWeeks }}</h3></li>
+                        <li class="list-group-item"><h3>Total Duration in Months: &nbsp;{{ totalMonths }}</h3></li>
+                        <li class="list-group-item"><h3>Total Duration in Years: &nbsp;{{ totalYears }}<span v-if="this.totalMonths > 12">+</span></h3></li>
+                    </ul>
+                    </div>
+            </div>
         </div>
-        </v-container>
-    </v-app>
-   </div>
-   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-   <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-   <script>
+ </div>
+
+        <!-- Date-picker dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22"></script>
+
+ 
+<!-- Date-picker itself -->
+<script src="https://cdn.jsdelivr.net/npm/pc-bootstrap4-datetimepicker@4.17/build/js/bootstrap-datetimepicker.min.js"></script>
+
+ 
+<!-- Vue js -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5"></script>
+
+  <!-- unpkg -->
+<script src="https://unpkg.com/vee-validate@latest"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<!-- Lastly add this package -->
+<script src="https://cdn.jsdelivr.net/npm/vue-bootstrap-datetimepicker@5"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+
+<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+
+<script>
+  // Initialize as global component
+  Vue.component('date-picker', VueBootstrapDatetimePicker);
+</script> 
+<script>
+   const dict = {
+          custom: {
+            dateFormatted: {
+                required:  'Please enter a date',
+                date_format: 'Please enter a date in the form MM/DD/YYYY',
+            }
+          }
+    };
+    Vue.use(VeeValidate); // good to go.
+</script>
+ <script>
     var programCalculator = new Vue({
         el: '#programCalculator',
-        vuetify: new Vuetify(),
         mounted(){
             this.showPieChart();
         },
         data() {
           return {
+                options: {
+                format: 'MM/DD/YYYY',
+                useCurrent: false,
+              },
               userSubmitted: false,
               displaySummary: false,
               inputDisabled: false,
@@ -207,7 +204,7 @@
            calculateTotals(){
             let submissionDate = moment(this.proposal.stages[0].submission_date);
             let proposalDate = moment(this.proposal.stages[this.proposal.stages.length - 1].date_of_completion);
-            this.totalDays = proposalDate.diff(submissionDate, 'days'););
+            this.totalDays = proposalDate.diff(submissionDate, 'days');
             this.totalWeeks = proposalDate.diff(submissionDate, 'weeks');
             this.totalMonths = proposalDate.diff(submissionDate, 'months');
             this.totalYears = proposalDate.diff(submissionDate, 'years');
@@ -273,8 +270,8 @@
            adjustDateOnAWeekend(stage, dateData, i, flag){
                 //console.log(`Adjustiing Date Data passed in ${JSON.stringify(dateData)}`);
                 let alteredDate;
-                let day = moment(dateData).format('dddd');
-               // console.log(`This date day is on a :${day}`);
+                let day = moment(dateData, 'MM-DD-YYYY').format('dddd');
+                console.log(`This date day is on a: ${day}`);
                switch(day){
                  case 'Friday':
                        // console.log(`This is a : ${flag == 1 ? 'submission_date' : flag == 2 ? 'date_of_completion' : 'regular date'}`);
@@ -730,4 +727,3 @@
       },
     })
    </script>
-   
