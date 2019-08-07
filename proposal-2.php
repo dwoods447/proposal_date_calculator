@@ -33,14 +33,14 @@
                                 </div>
                             </div>   
                             <div class="col-lg-2" v-if="!userSubmitted">
-                                <b-button size="lg" @click="submitDate" style="width: 100%;">Calculate</b-button>
+                                <b-button variant="danger" size="lg" @click="submitDate" style="width: 100%;">Calculate</b-button>
                             </div>
                             <div class="col-lg-2">
-                                <b-button size="lg" @click="clearDates" style="width: 100%;">Clear</b-button>
+                                <b-button variant="danger" size="lg" @click="clearDates" style="width: 100%;">Clear</b-button>
                             </div>
                             <div class="col-lg-12"><p style="color: red; margin-left: 20px;">{{message}}</p></div>
                             <ul>
-                                    <li v-for="error in errors.collect('dateFormatted')" style="color: red; margin-left: 20px;">{{ error }}</li>
+                                <li v-for="error in errors.collect('dateFormatted')" style="color: red; margin-left: 20px;">{{ error }}</li>
                             </ul>
                          </div>
                      </form>
@@ -50,7 +50,7 @@
                             <div class="col-lg-12">
                                 <div>
                                     <!-- Boostrap-Vue Proposal Table Component-->
-                                    <b-table striped hover :items="proposalStages" :fields="headers"></b-table>
+                                    <b-table bordered striped hover :items="proposalStages" :fields="headers"></b-table>
                                 </div>
                             </div>
                          </div>
@@ -58,43 +58,56 @@
                     <br/>
                     <br/>
                     <div class="col-6">
-                    <div id="chartContainer" style="height: 360px; width: 100%;"></div>
+                    <h4 style="text-align: center;">New Bachelor's and Master's Programs with costs over $2M in first five years and Engineering</h4>
+                    <div id="amDiv"  style="width: 100%; height: 240px;"></div>
                     </div>
                     <div class="col-6">
                     <ul class="list-group">
-                        <li class="list-group-item"><h3>Total Duration in Days: &nbsp;{{ totalDays }}</h3></li>
-                        <li class="list-group-item"><h3>Total Duration in Weeks: &nbsp;{{ totalWeeks }}</h3></li>
-                        <li class="list-group-item"><h3>Total Duration in Months: &nbsp;{{ totalMonths }}</h3></li>
-                        <li class="list-group-item"><h3>Total Duration in Years: &nbsp;{{ totalYears }}<span v-if="this.totalMonths > 12">+</span></h3></li>
+                        <li class="list-group-item"><h3>Total Duration in Days: &nbsp;<span v-if="totalDays != 0">{{ totalDays }}</span></h3></li>
+                        <li class="list-group-item"><h3>Total Duration in Weeks: &nbsp;<span v-if="totalWeeks != 0">{{ totalWeeks }}</span></h3></li>
+                        <li class="list-group-item"><h3>Total Duration in Months: &nbsp;<span v-if="totalMonths != 0">{{ totalMonths }}</span></h3></li>
+                        <li class="list-group-item"><h3>Total Duration in Years: &nbsp;<span v-if="totalYears != 0">{{ totalYears }}</span></h3></li>
                     </ul>
                     </div>
             </div>
         </div>
  </div>
 
-        <!-- Date-picker dependencies -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.3"></script>
-<script src="https://cdn.jsdelivr.net/npm/moment@2.22"></script>
 
- 
-<!-- Date-picker itself -->
+<!-- Date-picker dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.3"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+<!-- Date-picker itself --> 
 <script src="https://cdn.jsdelivr.net/npm/pc-bootstrap4-datetimepicker@4.17/build/js/bootstrap-datetimepicker.min.js"></script>
 
  
 <!-- Vue js -->
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5"></script>
 
-  <!-- unpkg -->
+  <!-- Vee Validate -->
 <script src="https://unpkg.com/vee-validate@latest"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
-<!-- Lastly add this package -->
+<!-- Date-picker Vue-Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/vue-bootstrap-datetimepicker@5"></script>
+
+
+<!-- Vue-Bootstrap Js -->
 <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
 
 <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+
+
+
+<!--AMCharts -->
+<script src="//www.amcharts.com/lib/4/core.js"></script>
+<script src="//www.amcharts.com/lib/4/charts.js"></script>
+<script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
+
+
+
+
 
 <script>
   // Initialize as global component
@@ -114,6 +127,9 @@
  <script>
     var programCalculator = new Vue({
         el: '#programCalculator',
+        created(){
+            this.$validator.localize('en', dict);
+        },
         mounted(){
             this.showPieChart();
         },
@@ -134,67 +150,56 @@
               modal: false,
               hideFooter: true,
               headers: [
-                {text: 'Stages', value: 'name'},
-                {text: 'Submission Date', value: 'submission_date'},
-                {text: 'Duration in Days', value: 'duration'},
-                {text: 'Date of Completion', value: 'date_of_completion'},
-                {text: 'Notes', value: 'notes'},
+                {label: 'Stage', key: 'stage'},
+                {label: 'Submission Date', key: 'submission_date'},
+                {label: 'Duration in Days', key: 'duration'},
+                {label: 'Date of Completion', key: 'date_of_completion'},
+                {label: 'Notes', key: 'notes'},
               ],
               proposal: {
                 stages: [
-                    {name: "Academic Programs 1", submission_date: 'n/a', duration: 7, date_of_completion: 'n/a', notes: 'PPR and BPF review'},
-                    {name: "Provost", submission_date: 'n/a', duration: 14, date_of_completion: 'n/a', notes: 'Proposal Review'},
-                    {name: "Provosts' Council 1", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Monthly'},
-                    {name: "Academic Unit 2", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Preparation of THECB documentation'},
-                    {name: "Academic Programs 2", submission_date: 'n/a', duration: 14, date_of_completion: 'n/a', notes: 'THECB Documentation Review'},
-                    {name: "UC/GPSC", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Monthly - Summer Hiatus June - Aug'},
-                    {name: "Provosts' Council 2", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Monthly'},
-                    {name: "Board of Regents", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Quarterly'},
-                    {name: "Area Notification", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Notification of all institutions (50 miles)'},
-                    {name: "THECB", submission_date: 'n/a', duration: 60, date_of_completion: 'n/a', notes: 'THECB Staff Review'},
-                    {name: "THECB CAWS", submission_date: 'n/a', duration: 90, date_of_completion: 'n/a', notes: 'Quarterly'},
-                    {name: "THECB Board Meeting", submission_date: 'n/a', duration: 30, date_of_completion: 'n/a', notes: 'Quarterly'},
-                    {name: "US Department of Education", submission_date: 'n/a' , duration: 45, date_of_completion: 'n/a', notes: 'Financial Aid Eligibility'},
-                    {name: "Academic Unit and UH Stakeholders", submission_date: 'n/a', duration: 14, date_of_completion: 'n/a', notes: 'PeopleSoft implementation, Catalog implementation, Application software updated, program available to applicants)'},	
+                    {stage: "Academic Programs 1", submission_date: '...', duration: 7, date_of_completion: '...', notes: 'PPR and BPF review'},
+                    {stage: "Provost", submission_date: '...', duration: 14, date_of_completion: '...', notes: 'Proposal Review'},
+                    {stage: "Provosts' Council 1", submission_date: '...', duration: 30, date_of_completion: '...', notes: 'Monthly'},
+                    {stage: "Academic Unit 2", submission_date: '...', duration: 30, date_of_completion: '...', notes: 'Preparation of THECB documentation'},
+                    {stage: "Academic Programs 2", submission_date: '...', duration: 14, date_of_completion: '...', notes: 'THECB Documentation Review'},
+                    {stage: "UC/GPSC", submission_date: '...', duration: 90, date_of_completion: '...', notes: 'Monthly - Summer Hiatus June - Aug'},
+                    {stage: "Provosts' Council 2", submission_date: '...', duration: 30, date_of_completion: '...', notes: 'Monthly'},
+                    {stage: "Board of Regents", submission_date: '...', duration: 90, date_of_completion: '...', notes: 'Quarterly'},
+                    {stage: "Area Notification", submission_date: '...', duration: 30, date_of_completion: '...', notes: 'Notification of all institutions (50 miles)'},
+                    {stage: "THECB", submission_date: '...', duration: 60, date_of_completion: '...', notes: 'THECB Staff Review'},
+                    {stage: "THECB CAWS", submission_date: '...', duration: 90, date_of_completion: '...', notes: 'Quarterly'},
+                    {stage: "THECB Board Meeting", submission_date: '...', duration: 30, date_of_completion: '...', notes: 'Quarterly'},
+                    {stage: "US Department of Education", submission_date: '...' , duration: 45, date_of_completion: '...', notes: 'Financial Aid Eligibility'},
+                    {stage: "Academic Unit and UH Stakeholders", submission_date: '...', duration: 14, date_of_completion: '...', notes: 'PeopleSoft implementation, Catalog implementation, Application software updated, program available to applicants'},	
                 ],
               },
-              chart : null,
-              chartOptions: {
-                    animationEnabled: true,
-                    title: {
-                    text: "New Bachelor's and Master's Programs with costs over $2M in first five years and Engineering",
-                },
-                data: [{
-                    type: "pie",
-                    startAngle: 240,
-                    yValueFormatString: "##0 \"days\"",
-                    indexLabel: "{label} {y}",
-                        dataPoints: [
-                            { label: "Academic Programs 1", y: 7 },
-                            { label: "Provost", y: 14 },
-                            { label: "Provosts' Council 1", y: 30 },
-                            { label: "Academic Unit 2", y: 30 },
-                            { label: "Academic Programs 2", y: 14 },
-                            { label: "UC/GPSC", y: 90 },
-                            { label: "Provosts' Council 2", y: 30 },
-                            { label: "Board of Regents", y: 90 },
-                            { label: "Area Notification", y: 30 },
-                            { label: "THECB", y: 60 },
-                            { label: "THECB CAWS", y: 90 },
-                            { label: "THECB Board Meeting", y: 30 },
-                            { label: "US Department of Education", y: 45 },
-                            { label: "Academic Unit and UH Stakeholders", y: 14 }
-                        ]
-                    }]
-              },
-               
+        
+      
+              amChartData: [
+                    {stage: "Academic Programs 1",  duration: 7},
+                    {stage: "Provost",  duration: 14},
+                    {stage: "Provosts' Council 1", duration: 30},
+                    {stage: "Academic Unit 2", duration: 30},
+                    {stage: "Academic Programs 2",  duration: 14},
+                    {stage: "UC/GPSC", duration: 90 },
+                    {stage: "Provosts' Council 2",  duration: 30},
+                    {stage: "Board of Regents",  duration: 90},
+                    {stage: "Area Notification",  duration: 30},
+                    {stage: "THECB", duration: 60 },
+                    {stage: "THECB CAWS", duration: 90 },
+                    {stage: "THECB Board Meeting", duration: 30 },
+                    {stage: "US Department of Education", duration: 45},
+                    {stage: "Academic Unit and UH Stakeholders",  duration: 14},	
+              ],
+
               totalDays: 0,
               totalWeeks: 0,
               totalMonths: 0,
               totalYears: 0, 
           }
         },
-       methods: {
+        methods: {
            clearTotals(){
             this.totalDays = 0;
             this.totalWeeks = 0;
@@ -211,8 +216,20 @@
 
            },
             showPieChart(){
-                this.chart = new CanvasJS.Chart("chartContainer", this.chartOptions);
-                this.chart.render();
+                let amChart = am4core.create("amDiv", am4charts.PieChart);
+                am4core.useTheme(am4themes_animated);
+                amChart.data = this.amChartData;
+                let pieSeries = amChart.series.push(new am4charts.PieSeries());
+                pieSeries.dataFields.value = "duration";
+                pieSeries.dataFields.category = "stage";
+                pieSeries.labels.template.text = "{category}-  {value.value} days";
+                pieSeries.slices.template.tooltipText = "{category}-  {value.value} days";
+                pieSeries.slices.template.stroke = am4core.color("#fff");
+                pieSeries.slices.template.strokeWidth = 2;
+                pieSeries.slices.template.strokeOpacity = 1;
+                // This creates initial animation
+                pieSeries.hiddenState.properties.opacity = 1;
+                pieSeries.hiddenState.properties.endAngle = -90;
             },
             formatDate (date) {
                 if (!date) return null
@@ -226,18 +243,24 @@
             },
 
             submitDate(){
-              if(this.dateFormatted){
-                this.message = "";  
-                this.userSubmitted = true; 
-                this.inputDisabled = true;
-                let success = this.calculateDates(this.proposal, this.dateFormatted);
-                if(success){
-                    this.displaySummary = true;
-                    this.calculateTotals();
-                    this.showPieChart();
-                }
-               
-              }
+                this.$validator.validateAll().then((result) => { 
+                 if (result) {
+                    if(this.dateFormatted){
+                        this.message = "";  
+                        this.userSubmitted = true;
+                        this.inputDisabled = true;
+                        let success = this.calculateDates(this.proposal, this.dateFormatted);
+                        if(success){
+                        this.displaySummary = true;
+                        this.calculateTotals();
+                        this.showPieChart();
+                       }
+                     }    
+                } else{
+                    console.log('Validation Errors');
+                   return false;             
+                }   
+             });
             },
             clearDates(){
              this.inputDisabled = false;   
@@ -254,16 +277,16 @@
            clearProposal({stages}){
             let normalDurations = [7, 14, 30, 30, 14, 90, 30, 90, 30, 60, 90, 30, 45, 14];
             for(let i = 0; i < stages.length; i++){
-                stages[i]['submission_date'] = '';
-                stages[i]['date_of_completion'] = '';
+                stages[i]['submission_date'] = '...';
+                stages[i]['date_of_completion'] = '...';
                 stages[i]['duration'] = normalDurations[i];
             }	
            },
 
            clearCalulatedDurationForChart(){
             let normalDurations = [7, 14, 30, 30, 14, 90, 30, 90, 30, 60, 90, 30, 45, 14];
-            for(let i = 0; i < this.chartOptions['data'][0]['dataPoints'].length; i++){
-                this.chartOptions['data'][0]['dataPoints'][i]['y'] = normalDurations[i];
+            for(let i = 0; i <  this.amChartData.length; i++){
+                this.amChartData[i]['duration'] = normalDurations[i];
             }
            },
 
@@ -292,14 +315,14 @@
                             // set the duration 
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
                             // populate the chart  with updated durations 
-                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
+                            this.amChartData[i]['duration'] = stage[i]['duration'];
                         } else {
                             // This is a regular date
                             alteredDate = moment(dateData, 'MM-DD-YYYY').add(0, 'days').format('l');
                             // set the duration 
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 0);
                               // populate the chart  with updated durations 
-                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
+                            this.amChartData[i]['duration'] = stage[i]['duration'];
                         }
 			    break;
 			    case 'Saturday':
@@ -320,14 +343,14 @@
                             // set the duration 
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
                              // populate the chart  with updated durations 
-                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
+                             this.amChartData[i]['duration'] = stage[i]['duration'];
                         }  else {
                         // This is a regular date
                             alteredDate = moment(dateData, 'MM-DD-YYYY').add(2, 'days').format('l');
                              // set the duration 
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 2);
                              // populate the chart  with updated durations 
-                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
+                             this.amChartData[i]['duration'] = stage[i]['duration'];
                         }
 			    break;
 			    case 'Sunday':
@@ -346,21 +369,21 @@
                                      stage[i]['date_of_completion'] = alteredDate;
                             }
                             stage[i]['duration'] = (parseInt(stage[i]['duration']) + 1);    
-                            this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];    
+                            this.amChartData[i]['duration'] = stage[i]['duration'];
                             }  else {
                                 // This is a regular date
                                 alteredDate = moment(dateData, 'MM-DD-YYYY').add(1, 'days').format('l');
                                 // set the duration 
                                 stage[i]['duration'] = (parseInt(stage[i]['duration']) + 1);
                                   // populate the chart  with updated durations 
-                                this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
+                            this.amChartData[i]['duration'] = stage[i]['duration'];
                             }
 			    break;
                 default:
                          // date is on a weekday return date
                         alteredDate = dateData;
                         // set the duration 
-                        this.chartOptions['data'][0]['dataPoints'][i]['y'] = stage[i]['duration'];
+                        this.amChartData[i]['duration'] = stage[i]['duration'];
                     break;
 		        } // End of Switch
 
@@ -534,26 +557,25 @@
                     for(let i = 0; i < stages.length; i++){
                         if(i < 1){
                                 // This will be user's input
-                                console.log(`Chart Obj ${JSON.stringify(this.chartOptions['data'][0]['dataPoints'][i]['y'])}`);
                                 stages[i]['submission_date'] = this.adjustDateOnAWeekend(stages, userInput, i, 1);	
                                 let currentSubmissionDate = moment(stages[i]['submission_date'], 'MM-DD-YYYY').add(stages[i]['duration'], 'days').format('l');
                                 let currentDateOfCompletion = stages[i]['date_of_completion'];
                                 stages[i]['date_of_completion'] = this.adjustDateOnAWeekend(stages, currentSubmissionDate, i, 2);
                                 console.log(`Adding ${stages[i]['duration']} days to ${stages[i]['submission_date']} to get ${currentDateOfCompletion}`);
-                                this.chartOptions['data'][0]['dataPoints'][i]['y'] = stages[i]['duration'];
+                                this.amChartData[i]['duration'] = stages[i]['duration'];
                         } 
                         else {
                             this.setNormalDates(stages, i);
-                            if(this.isOnAHiatus(currentMonthIndex) && stages[i]['name'] === "UC/GPSC"){
+                            if(this.isOnAHiatus(currentMonthIndex) && stages[i]['stage'] === "UC/GPSC"){
                                 this.hiatusDateAdjustment(chosenYear, stages, i);
                             }
-                            if(stages[i]['name'] === "Board of Regents"){
+                            if(stages[i]['stage'] === "Board of Regents"){
                                 this.dateAdjustmentForBoardOfRegentsMeeting(stages, chosenYear, i);
                             }
-                            if(stages[i]['name'] === "THECB CAWS"){
+                            if(stages[i]['stage'] === "THECB CAWS"){
                                 this.adjustDateForCAWSQuarterly(stages, chosenYear, i);
                             }
-                            if(stages[i]['name'] === "THECB Board Meeting"){
+                            if(stages[i]['stage'] === "THECB Board Meeting"){
                                 this.adjustDateForCAWSBoardMeetingQuarterly(stages, chosenYear, i);
                             }
                         }
@@ -724,6 +746,7 @@
         date (val) {
             this.dateFormatted = this.formatDate(this.date)
         },
+    
       },
     })
    </script>
