@@ -190,7 +190,7 @@
               totalWeeks: 0,
               totalMonths: 0,
               totalYears: 0,
-              
+              chart: '',
           }
         },
        methods: {
@@ -208,21 +208,31 @@
             this.totalMonths = proposalDate.diff(submissionDate, 'months');
             this.totalYears = proposalDate.diff(submissionDate, 'years');
            },
-            showPieChart(){
-                let amChart = am4core.create("amDiv", am4charts.PieChart);
-                am4core.useTheme(am4themes_animated);
-                amChart.data = this.amChartData;
-                let pieSeries = amChart.series.push(new am4charts.PieSeries());
-                pieSeries.dataFields.value = "duration";
-                pieSeries.dataFields.category = "stage";
-                pieSeries.labels.template.text = "{category}-  {value.value} days";
-                pieSeries.slices.template.tooltipText = "{category}-  {value.value} days";
-                pieSeries.slices.template.stroke = am4core.color("#fff");
-                pieSeries.slices.template.strokeWidth = 2;
-                pieSeries.slices.template.strokeOpacity = 1;
-                // This creates initial animation
-                pieSeries.hiddenState.properties.opacity = 1;
-                pieSeries.hiddenState.properties.endAngle = -90;
+           createChart(){
+                    let amChart = am4core.create("amDiv", am4charts.PieChart);
+                    this.chart = amChart;
+                    am4core.useTheme(am4themes_animated);
+                    amChart.data = this.amChartData;
+                    let pieSeries = amChart.series.push(new am4charts.PieSeries());
+                    pieSeries.dataFields.value = "duration";
+                    pieSeries.dataFields.category = "stage";
+                    pieSeries.labels.template.text = "{category} -  {value.value} days";
+                    pieSeries.slices.template.tooltipText = "{category} -  {value.value} days";
+                    pieSeries.slices.template.stroke = am4core.color("#fff");
+                    pieSeries.slices.template.strokeWidth = 2;
+                    pieSeries.slices.template.strokeOpacity = 1;
+                    // This creates initial animation
+                    pieSeries.hiddenState.properties.opacity = 1;
+                    pieSeries.hiddenState.properties.endAngle = -90;
+           },
+           showPieChart(){
+                if(this.chart){
+                    this.chart.dispose();
+                    this.createChart();
+                    
+                } else {
+                    this.createChart();
+                }
             },
             formatDate (date) {
                 if (!date) return null
@@ -250,7 +260,7 @@
                        }
                      }    
                 } else{
-                    console.log('Validation Errors');
+                    this.message = 'Please correct the errors';
                    return false;             
                 }   
              });
@@ -391,7 +401,6 @@
             let currentStageSubmissionDate = this.adjustDateOnAWeekend(stage, stage[i]['submission_date'], i, 1);
             let currentDateOfCompletion =  moment(currentStageSubmissionDate, 'MM-DD-YYYY').add(stage[i]['duration'], 'days').format('l');
             stage[i]['date_of_completion'] = this.adjustDateOnAWeekend(stage, currentDateOfCompletion, i, 2);
-            console.log(`Adding ${stage[i]['duration']} days to ${stage[i]['submission_date']} to get ${currentDateOfCompletion}`);
            },
 
 
@@ -409,7 +418,6 @@
                 let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion, 'MM-DD-YYYY')._d.getFullYear();
                 let year = moment(previousStageDateOfCompletion, 'YYYY').isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
                 let marchDeadline = this.adjustDateOnAWeekend(stage, '3/1/' + year, i, 3);
-                console.log(`Hiatus Year value is: ${year} Previous Stage Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
                 if(moment(previousStageDateOfCompletion ,'MM-DD-YYYY').isAfter(marchDeadline)){
                     // Check if the date previous stage's date of completion is between march and aug
                     if(moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isBetween('3/2/'+year, '8/31/'+year)){
@@ -443,14 +451,12 @@
 			let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
             // Get the full Year of the previous stage's date of completion
             let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
-            console.log(`Prv date of completion ${yearOfPrvDateOfCompletion.toString()}`);
             // Get the month index of the previous stage's date of completion    
 			let  monthIndex = moment(previousStageDateOfCompletion, 'MM-DD-YYYY')._d.getMonth();
              // Get the month  ex. Feb        
 			let  month  =  moment(previousStageDateOfCompletion, 'MM-DD-YYYY').format("MMM");
              // Check if the previous stage's date of completion is after year user entered if it is then return that year if its not then return the year the user entered   
             let year = moment(previousStageDateOfCompletion, 'MM-DD-YYYY').isAfter(yearUserChose) ? yearOfPrvDateOfCompletion.toString() : yearUserChose;
-            console.log(`BoardOfRegentsMeeting Year value is: ${year} Previous Year is ${yearOfPrvDateOfCompletion.toString()} and Year user chose is ${yearUserChose}`);
 			switch(month){
 				case 'Feb':
                 //Check if the previous stage's date of completion month is in Feb
@@ -538,18 +544,11 @@
 
         calculateDates({stages}, date){
                 var monthIndex  = moment(date, 'MM-DD-YYYY')._d.getMonth();
-                // console.log(`Month index ${currentMonthIndex}`);
-                // console.log(`Proposal Arr passed in ${JSON.stringify(stages, null, 2)}`);
-                console.log(`Month Index: ${monthIndex}`);
                 var chosenYear = moment(date, 'MM-DD-YYYY')._d.getFullYear().toString();
-                console.log(`Year User selected ${chosenYear}`);
                 let currentDateToday = moment().format('l');
                 let userInput = moment(date, 'MM-DD-YYYY').format('l');
-                console.log(`User input: ${userInput}`);
                 currentDateToday = new Date(currentDateToday).toISOString()
-                console.log(`Current Day Today: ${currentDateToday}`);
                 let isBeforeToday = moment(userInput, 'MM-DD-YYYY').isBefore(currentDateToday);
-                console.log(`Date is before today: ${isBeforeToday}`);
                 if(!isBeforeToday){
                     for(let i = 0; i < stages.length; i++){
                         if(i < 1){
@@ -559,7 +558,6 @@
                                 let currentSubmissionDate = moment(stages[i]['submission_date'], 'MM-DD-YYYY').add(stages[i]['duration'], 'days').format('l');
                                 let currentDateOfCompletion = stages[i]['date_of_completion'];
                                 stages[i]['date_of_completion'] = this.adjustDateOnAWeekend(stages, currentSubmissionDate, i, 2);
-                                console.log(`Adding ${stages[i]['duration']} days to ${stages[i]['submission_date']} to get ${currentDateOfCompletion}`);
                                 this.amChartData[i]['duration'] = stages[i]['duration'];
                         } 
                         else {
@@ -574,13 +572,9 @@
                             }
                         }
                     }
-                   console.log(`Proposal 1: Poulated ${JSON.stringify(this.proposal, null, 2)}`);
                    return true; // function is done executing return true
-                    /*console.log(`Proposal 2: Poulated ${JSON.stringify(proposalTwo, null, 2)}`);
-                    console.log(`Proposal 3: Poulated ${JSON.stringify(proposalThree, null, 2)}`);  */
                 }   else {
                       // User entered Date in the past
-                        console.log('You entered a date in the past!');
                         this.message = "You entered a date in the past! Please Try Again...";
                         return false;
                 }
@@ -597,7 +591,6 @@
        },
       watch: {
         date (val) {
-            console.log(`formating Date: ${val}`)
             this.dateFormatted = this.formatDate(this.date)
         },
       },
