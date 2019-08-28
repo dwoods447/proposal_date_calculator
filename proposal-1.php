@@ -15,6 +15,10 @@
 
         <style>
          @import url("//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css");
+         .errors{
+             font-weight: 900;
+             color: red;
+         }
         </style>
 
 <div id="programCalculator">
@@ -31,6 +35,7 @@
                                     </div>
                                     <date-picker v-validate="'required|date_format:MM/dd/yyyy'" name="dateFormatted" placeholder="MM/DD/YYYY" v-model="dateFormatted" :disabled="inputDisabled" :config="options" style="height: 49px;"></date-picker>
                                 </div>
+                               
                             </div>   
                             <div class="col-lg-2" v-if="!userSubmitted">
                                 <b-button variant="danger" size="lg" @click="submitDate" style="width: 100%;">Calculate</b-button>
@@ -40,7 +45,7 @@
                             </div>
                             <div class="col-lg-12"><p style="color: red; margin-left: 20px;">{{message}}</p></div>
                             <ul>
-                                    <li v-for="error in errors.collect('dateFormatted')" style="color: red; margin-left: 20px;">{{ error }}</li>
+                                <li v-for="error in errors.collect('dateFormatted')" style="color: red; margin-left: 20px;">{{ error }}</li>
                             </ul>
                          </div>
                      </form>
@@ -61,7 +66,7 @@
                     <!-- <div id="chartContainer" style="height: 360px; width: 100%;"></div> -->
                     <h4 style="text-align: center;">New Bachelor's and Master's Programs with costs under $2M in first five years</h4>
                     <!-- <canvas id="myChart" style="height: 300px; width: 100%;"></canvas> -->
-                    <div id="amDiv"  style="width: 100%; height: 240px;"></div>
+                    <div id="amDiv"  style="width: 100%; height: 240px;" ref="amDiv"></div>
                     </div>
                     <div class="col-6">
                     <ul class="list-group">
@@ -85,10 +90,10 @@
 
  
 <!-- Vue js -->
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10"></script>
 
 <!-- Vee Validate -->
-<script src="https://unpkg.com/vee-validate@latest"></script>
+<script src="https://unpkg.com/vee-validate@2.2.15"></script>
 
 
 <!-- Date-picker Vue-Bootstrap -->
@@ -104,15 +109,17 @@
 <!--AMCharts -->
 <script src="//www.amcharts.com/lib/4/core.js"></script>
 <script src="//www.amcharts.com/lib/4/charts.js"></script>
+<script src="//www.amcharts.com/lib/4/themes/material.js"></script>
 <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
 
 
 <script>
   // Initialize as global component
   Vue.component('date-picker', VueBootstrapDatetimePicker);
+
 </script> 
 <script>
-   const dict = {
+  const dict = {
           custom: {
             dateFormatted: {
                 required:  'Please enter a date',
@@ -121,14 +128,14 @@
           }
     };
     Vue.use(VeeValidate); // good to go.
-</script>
-   <script>
     var programCalculator = new Vue({
+        
         el: '#programCalculator',
-        created(){
-            this.$validator.localize('en', dict);
+        created(){ 
+           this.$validator.localize('en', dict); 
         },
         mounted(){
+           
             this.showPieChart();
         },
         data() {
@@ -450,7 +457,7 @@
             //Get the previous stage's date of completion
 			let previousStageDateOfCompletion  = stage[i - 1]['date_of_completion'];
             // Get the full Year of the previous stage's date of completion
-            let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion)._d.getFullYear();
+            let yearOfPrvDateOfCompletion = moment(previousStageDateOfCompletion,  'MM-DD-YYYY')._d.getFullYear();
             // Get the month index of the previous stage's date of completion    
 			let  monthIndex = moment(previousStageDateOfCompletion, 'MM-DD-YYYY')._d.getMonth();
              // Get the month  ex. Feb        

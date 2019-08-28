@@ -84,10 +84,10 @@
 
  
 <!-- Vue js -->
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10"></script>
 
-  <!-- Vee Validate -->
-<script src="https://unpkg.com/vee-validate@latest"></script>
+<!-- Vee Validate -->
+<script src="https://unpkg.com/vee-validate@2.2.15"></script>
 
 <!-- Date-picker Vue-Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/vue-bootstrap-datetimepicker@5"></script>
