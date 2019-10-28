@@ -1,5 +1,5 @@
 ## Program Timeline Calculator 
-This is a proposed programs approval process calculator written using Vue.js and Bootstrap-Vue. It will provide users an idea of how long their program proposals may take. Essentially they’ll enter a date in the green cell and it will auto-calculate dates for all the specific steps.
+This is a proposed programs approval process calculator written using Vue.js and Bootstrap-Vue. It will provide users an idea of how long their program proposals may take. Essentially they’ll enter a date in the input and it will auto-calculate dates for all the specific steps.
 
 
 
